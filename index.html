@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Super Jawad Adventures</title>
+<style>
+:root{--ink:#1c1f3a;--gold:#ffd23f;--pink:#ff6b9d;--teal:#2ee6a6;--blue:#3fa7ff;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#0d1120;font-family:"Baloo 2","Fredoka One","Nunito","Segoe UI",Arial,sans-serif;color:#fff;touch-action:none}
+canvas#game{position:fixed;inset:0;display:block}
+.screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;padding:16px;text-align:center;overflow:auto}
+.screen.active{display:flex}
+.night{background:radial-gradient(ellipse at 50% 120%,#243b6b 0%,#141a3a 45%,#0a0d1f 100%)}
+.stars{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 70% 20%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 40% 70%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 85% 60%,#fff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 10% 80%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 55% 45%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 92% 15%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 30% 10%,#fff 50%,transparent 51%);opacity:.7;animation:twinkle 4s ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.4}to{opacity:.9}}
+.moon{position:absolute;right:8%;top:8%;width:80px;height:80px;border-radius:50%;background:#fff6c9;box-shadow:0 0 40px 10px rgba(255,246,201,.35),inset -18px -8px 0 0 #e9dca0;pointer-events:none}
+.city{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(transparent 0,#0b0e1c 60%);pointer-events:none}
+.city:before{content:"";position:absolute;left:0;right:0;bottom:0;height:100%;background:
+ linear-gradient(90deg,transparent 0 4%,#131736 4% 9%,transparent 9% 12%,#161b3d 12% 20%,transparent 20% 23%,#101430 23% 27%,transparent 27% 31%,#161b3d 31% 40%,transparent 40% 43%,#131736 43% 48%,transparent 48% 52%,#161b3d 52% 58%,transparent 58% 61%,#101430 61% 68%,transparent 68% 72%,#131736 72% 79%,transparent 79% 82%,#161b3d 82% 90%,transparent 90% 93%,#101430 93% 98%,transparent 98%);
+ mask:linear-gradient(transparent 0,#000 30%);-webkit-mask:linear-gradient(transparent 0,#000 30%)}
+h1.logo{font-size:clamp(34px,8vw,72px);margin:0;line-height:1;letter-spacing:1px;color:var(--gold);text-shadow:0 4px 0 #b8860b,0 8px 0 rgba(0,0,0,.35),0 0 30px rgba(255,210,63,.35);transform:rotate(-2deg);position:relative;z-index:1}
+h1.logo small{display:block;font-size:.42em;color:#fff;text-shadow:0 3px 0 #a12a55,0 6px 0 rgba(0,0,0,.3);letter-spacing:4px;transform:rotate(1deg)}
+.tag{position:relative;z-index:1;margin:8px 0 18px;font-size:clamp(14px,2.5vw,20px);color:#cfd8ff;font-weight:600}
+#heroCanvas{position:relative;z-index:1;width:160px;height:150px;filter:drop-shadow(0 12px 12px rgba(0,0,0,.5));animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.btn{position:relative;z-index:1;display:inline-block;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:clamp(16px,2.6vw,22px);color:#fff;padding:14px 34px;border-radius:999px;margin:6px;background:linear-gradient(#ff8fb8,#ff4f8b);box-shadow:0 6px 0 #b8275e,0 10px 18px rgba(0,0,0,.4);transition:transform .08s,box-shadow .08s;text-shadow:0 2px 0 rgba(0,0,0,.25);letter-spacing:.5px}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 #b8275e,0 3px 8px rgba(0,0,0,.4)}
+.btn.big{font-size:clamp(20px,4vw,30px);padding:18px 54px;background:linear-gradient(#ffe27a,#ffb400);color:#4a2f00;box-shadow:0 7px 0 #b8770c,0 12px 20px rgba(0,0,0,.45);text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.btn.big:active{box-shadow:0 1px 0 #b8770c,0 3px 8px rgba(0,0,0,.4)}
+.btn.ghost{background:rgba(255,255,255,.12);box-shadow:0 4px 0 rgba(0,0,0,.35);font-size:15px;padding:10px 22px}
+.btn.green{background:linear-gradient(#5ef0b5,#17c07f);box-shadow:0 6px 0 #0d7f53,0 10px 18px rgba(0,0,0,.4)}
+.btn.blue{background:linear-gradient(#69bfff,#2b8cf0);box-shadow:0 6px 0 #1a5fa8,0 10px 18px rgba(0,0,0,.4)}
+.row{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;position:relative;z-index:1}
+.card{position:relative;z-index:1;background:rgba(20,24,55,.92);border:3px solid rgba(255,255,255,.12);border-radius:26px;padding:22px 26px;max-width:640px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.5);backdrop-filter:blur(6px)}
+.card h2{margin:0 0 10px;font-size:clamp(26px,5vw,40px);color:var(--gold);text-shadow:0 3px 0 #9a6b00}
+.card p{margin:8px 0;line-height:1.5;font-size:clamp(14px,2.2vw,18px);color:#e6e9ff}
+.card ul{text-align:left;display:inline-block;margin:6px auto;padding-left:22px;line-height:1.7;font-size:clamp(14px,2.2vw,17px)}
+.story-scene{display:flex;align-items:center;gap:18px;justify-content:center;flex-wrap:wrap;margin:6px 0 10px}
+.story-scene .dad,.story-scene .kid{width:90px;height:110px}
+.speech{background:#fff;color:#222;border-radius:18px;padding:12px 16px;position:relative;max-width:340px;font-weight:600;font-size:15px;line-height:1.45;text-align:left}
+.speech:after{content:"";position:absolute;left:-14px;top:40%;border:8px solid transparent;border-right-color:#fff;border-left:0}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0}
+.how-grid div{background:rgba(255,255,255,.07);border-radius:14px;padding:10px;font-size:14px;line-height:1.4}
+.how-grid b{display:block;font-size:24px;margin-bottom:4px}
+kbd{background:#2a2f5a;border:1px solid #4a5090;border-bottom-width:3px;border-radius:6px;padding:1px 7px;font-family:inherit;font-weight:800;font-size:.9em}
+/* map */
+#map{padding:0}
+.mapTop{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;z-index:3;background:linear-gradient(rgba(0,0,0,.55),transparent)}
+.mapTop h2{margin:0;font-size:clamp(18px,3.5vw,28px);color:var(--gold);text-shadow:0 2px 0 #9a6b00}
+.pill{background:rgba(0,0,0,.45);border-radius:999px;padding:6px 14px;font-weight:800;font-size:15px;border:2px solid rgba(255,255,255,.15)}
+.pill.gold{color:var(--gold)}
+.mapArea{position:relative;width:min(100vw,140vh);height:min(72vh,100vw*0.72);max-width:1100px;margin-top:20px}
+@media (min-aspect-ratio:1/1){.mapArea{width:min(96vw,130vh);height:min(78vh,60vw)}}
+@media (max-aspect-ratio:1/1){.mapArea{width:96vw;height:min(80vh,150vw);margin-top:40px}}
+#mapPath{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:1}
+#mapHouses{position:absolute;inset:0;z-index:2}
+.house{position:absolute;width:clamp(48px,8vw,80px);height:clamp(58px,9.5vw,92px);transform:translate(-50%,-50%);background:none;border:0;cursor:pointer;padding:0;transition:transform .15s;filter:drop-shadow(0 6px 6px rgba(0,0,0,.5))}
+.house:hover{transform:translate(-50%,-50%) scale(1.12)}
+.house.locked{cursor:not-allowed;opacity:.65}
+.house.current{animation:pulse 1.4s ease-in-out infinite}
+.house.home .hsvg{transform:scale(1.25)}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.14)}}
+.house.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(-56%,-50%)}75%{transform:translate(-44%,-50%)}}
+.hsvg{width:100%;height:auto;display:block}
+.hnum{position:absolute;left:50%;top:-2px;transform:translateX(-50%);background:var(--gold);color:#4a2f00;font-weight:900;font-size:clamp(11px,1.6vw,15px);border-radius:999px;padding:1px 8px;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+.house.locked .hnum{background:#666;color:#ccc}
+.hstars{font-size:clamp(11px,1.7vw,16px);color:var(--gold);line-height:1;margin-top:-4px;text-shadow:0 1px 0 #000;letter-spacing:-1px}
+.hstars .dim{color:rgba(255,255,255,.25)}
+.mapBottom{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:6px;padding:8px;z-index:3;flex-wrap:wrap}
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;display:none;z-index:5}
+.hudTop{position:absolute;top:0;left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;padding:10px 12px;gap:8px;padding-top:max(10px,env(safe-area-inset-top))}
+.hudBox{background:rgba(10,12,35,.72);border:2px solid rgba(255,255,255,.14);border-radius:16px;padding:6px 12px;font-weight:800;font-size:15px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(4px)}
+.hudBox .ico{font-size:18px}
+#hSpecial{opacity:.35;filter:grayscale(1);transition:.3s}
+#hSpecial.got{opacity:1;filter:none;animation:pop .5s}
+#hStars span{color:rgba(255,255,255,.25);font-size:20px;transition:.3s}
+#hStars span.on{color:var(--gold);text-shadow:0 0 8px rgba(255,210,63,.7)}
+#hKeys{display:flex;gap:4px}#hKeys i{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #fff}
+#btnPauseHud{pointer-events:auto;background:rgba(10,12,35,.72);border:2px solid rgba(255,255,255,.14);color:#fff;border-radius:14px;width:44px;height:44px;font-size:20px;cursor:pointer}
+.dangerWrap{position:absolute;top:64px;left:50%;transform:translateX(-50%);width:min(60vw,260px);height:10px;background:rgba(0,0,0,.5);border-radius:6px;overflow:hidden;border:2px solid rgba(255,255,255,.15)}
+#hDanger{height:100%;width:0;background:#f1c40f;transition:width .1s}
+#hMsg{position:absolute;top:84px;left:50%;transform:translateX(-50%);max-width:90vw;background:rgba(10,12,35,.85);border:2px solid var(--gold);color:#fff;font-weight:700;padding:8px 16px;border-radius:14px;font-size:15px;opacity:0;transition:opacity .3s;text-align:center}
+#toast{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%) scale(.8);opacity:0;background:rgba(10,12,35,.9);border:3px solid var(--gold);border-radius:20px;padding:16px 30px;text-align:center;pointer-events:none}
+#toast b{display:block;font-size:clamp(20px,4vw,30px);color:var(--gold)}#toast span{font-size:15px;color:#e6e9ff}
+#toast.show{animation:toast 3s forwards}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,-50%) scale(.8)}10%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}15%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(1)}}
+/* touch */
+#touch{position:fixed;inset:0;pointer-events:none;display:none;z-index:6}
+#joy{position:absolute;left:24px;bottom:max(24px,env(safe-area-inset-bottom));width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.08);border:3px solid rgba(255,255,255,.2);pointer-events:auto;touch-action:none}
+#joyKnob{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#bfc8ff);box-shadow:0 4px 10px rgba(0,0,0,.5);pointer-events:none}
+.tbtn{position:absolute;right:24px;width:78px;height:78px;border-radius:50%;border:3px solid rgba(255,255,255,.3);color:#fff;font-weight:900;font-size:14px;pointer-events:auto;touch-action:none;box-shadow:0 5px 0 rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;flex-direction:column;line-height:1.1}
+.tbtn span{font-size:24px}
+#btnRun{bottom:max(24px,env(safe-area-inset-bottom));background:rgba(255,79,139,.75)}
+#btnAct{bottom:calc(max(24px,env(safe-area-inset-bottom)) + 96px);right:40px;background:rgba(46,230,166,.7)}
+.tbtn.down{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+#btnAct.glow{animation:glow .8s infinite alternate}
+@keyframes glow{from{box-shadow:0 5px 0 rgba(0,0,0,.4),0 0 0 0 rgba(46,230,166,.8)}to{box-shadow:0 5px 0 rgba(0,0,0,.4),0 0 24px 6px rgba(46,230,166,.8)}}
+/* overlays */
+.overlay{background:rgba(5,7,25,.7);backdrop-filter:blur(4px);z-index:10}
+#winStars,#hStars{display:flex;gap:6px;justify-content:center}
+#winStars span{font-size:clamp(44px,10vw,72px);color:rgba(255,255,255,.18);transition:.3s;display:inline-block}
+#winStars span.on{color:var(--gold);text-shadow:0 0 20px rgba(255,210,63,.8),0 4px 0 #9a6b00}
+#winStars span.pop{animation:pop .5s}
+@keyframes pop{0%{transform:scale(.3) rotate(-30deg)}60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0)}}
+#winStars span:nth-child(2){transform:translateY(-10px)}
+.scoreList{display:flex;flex-direction:column;gap:4px;margin:12px auto;max-width:360px;text-align:left}
+.scoreList div{display:flex;justify-content:space-between;background:rgba(255,255,255,.06);border-radius:10px;padding:6px 12px;font-size:15px}
+.scoreList div b{color:var(--gold)}
+.scoreList div.tot{background:rgba(255,210,63,.18);font-size:18px;border:2px solid var(--gold)}
+#confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+#confetti i{position:absolute;top:-20px;width:10px;height:14px;border-radius:2px;animation:fall 3s linear infinite}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.sadFace{font-size:70px;margin:0;animation:wob 1.5s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.small{font-size:13px;opacity:.7;margin-top:10px}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hudTop">
+    <div class="hudBox"><span id="hLevel">Lvl 1</span><span class="ico">🪙</span><span id="hGold">0/0</span><span class="ico" id="hSpecial">💎</span><span id="hKeys"></span></div>
+    <div class="hudBox" id="hStars"><span>★</span><span>★</span><span>★</span></div>
+    <div style="display:flex;gap:8px;align-items:center"><div class="hudBox"><span class="ico">⏱️</span><span id="hTime">0:00</span></div><button id="btnPauseHud" title="Pause">⏸</button></div>
+  </div>
+  <div class="dangerWrap"><div id="hDanger"></div></div>
+  <div id="hMsg"></div>
+  <div id="toast"></div>
+</div>
+<div id="touch">
+  <div id="joy"><div id="joyKnob"></div></div>
+  <div class="tbtn" id="btnAct"><span>⚡</span>USE</div>
+  <div class="tbtn" id="btnRun"><span>💨</span>RUN</div>
+</div>
+
+<!-- TITLE -->
+<div class="screen night active" id="title">
+  <div class="stars"></div><div class="moon"></div><div class="city"></div>
+  <h1 class="logo">SUPER JAWAD<small>ADVENTURES</small></h1>
+  <div class="tag">A sneaky hero returns what was lost 🌙</div>
+  <canvas id="heroCanvas" width="160" height="150"></canvas>
+  <button class="btn big" id="btnPlay">▶ PLAY</button>
+  <div class="row"><button class="btn ghost" id="btnStory">📖 Story</button><button class="btn ghost" id="btnHow">🎮 How to Play</button><button class="btn ghost btnMusic">🎵 Music: ON</button><button class="btn ghost btnSfx">🔊 Sound: ON</button></div>
+  <div class="small">WASD / Arrows to sneak · Shift to run · Space to use switches · P to pause</div>
+</div>
+
+<!-- STORY -->
+<div class="screen night" id="story">
+  <div class="stars"></div><div class="moon"></div>
+  <div class="card">
+    <h2>The Big Challenge</h2>
+    <div class="story-scene">
+      <svg class="dad" viewBox="0 0 90 110"><ellipse cx="45" cy="104" rx="26" ry="5" fill="rgba(0,0,0,.4)"/><rect x="28" y="50" width="34" height="46" rx="10" fill="#2980b9"/><circle cx="45" cy="34" r="20" fill="#f5cba7"/><path d="M25 30 Q45 5 65 30 Z" fill="#4a2c17"/><rect x="34" y="40" width="22" height="5" rx="2" fill="#4a2c17"/><circle cx="38" cy="33" r="2.5" fill="#222"/><circle cx="52" cy="33" r="2.5" fill="#222"/><path d="M38 46 Q45 50 52 46" stroke="#a04" stroke-width="2" fill="none"/><rect x="60" y="56" width="10" height="26" rx="5" fill="#f5cba7" transform="rotate(-30 65 56)"/></svg>
+      <div class="speech">"Jawad, my boy. The people of our city have lost their most precious golden things. Sneak into 30 houses, find them, and return every treasure. Do this without being caught, and you will come home a <b>true hero</b>!"</div>
+    </div>
+    <p>Super Jawad is a brave little hero. His father gave him a big challenge to prove he is responsible and independent.</p>
+    <p><b>Remember:</b> you are not a thief - you're a <b>hero</b>! Nobody must see you, because the surprise has to be perfect. 🤫</p>
+    <button class="btn big" id="btnStoryNext">Let's Go!</button>
+  </div>
+</div>
+
+<!-- HOW TO -->
+<div class="screen night" id="how">
+  <div class="stars"></div>
+  <div class="card">
+    <h2>How to Play</h2>
+    <div class="how-grid">
+      <div><b>🕹️</b><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or Joystick to sneak around</div>
+      <div><b>💨</b><kbd>Shift</kbd> / RUN button - fast but <i>noisy</i>!</div>
+      <div><b>👀</b>Stay out of the yellow <b>vision cones</b> of residents</div>
+      <div><b>🚪</b>Stand still in wardrobes, curtains, plants and boxes to <b>hide</b></div>
+      <div><b>🌑</b>Dark rooms hide you. Flip <b>light switches</b> with <kbd>Space</kbd></div>
+      <div><b>📷</b>Cameras trigger the alarm - switch them off at the CAM box</div>
+      <div><b>🐶</b>Sleeping dogs wake if you run nearby - tiptoe!</div>
+      <div><b>🗝️</b>Colored keys open matching locked doors</div>
+      <div><b>💎</b>Find the <b>special treasure</b> to open the EXIT</div>
+      <div><b>⭐</b>Collect all the gold for <b>3 stars</b></div>
+    </div>
+    <p>If someone catches you, don't worry - they'll just walk you outside and you can try again!</p>
+    <button class="btn" id="btnHowBack">Back</button>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="screen night" id="map">
+  <div class="stars"></div><div class="moon"></div><div class="city"></div>
+  <div class="mapTop"><button class="btn ghost" id="btnMapBack">◀ Menu</button><h2>🗺️ Choose a House</h2><div style="display:flex;gap:6px"><div class="pill gold">⭐ <span id="mapStars">0 / 90</span></div><div class="pill">🏆 <span id="mapScore">0</span></div></div></div>
+  <div class="mapArea"><svg id="mapPath"></svg><div id="mapHouses"></div></div>
+  <div class="mapBottom"><button class="btn ghost btnMusic">🎵 Music: ON</button><button class="btn ghost btnSfx">🔊 Sound: ON</button><button class="btn ghost" id="btnReset">🗑 Reset Progress</button></div>
+</div>
+
+<!-- BRIEFING -->
+<div class="screen night" id="briefing">
+  <div class="stars"></div>
+  <div class="card">
+    <h2 id="bfTitle">Mission 1</h2>
+    <p>🎯 Treasure to return: <b id="bfTreasure" style="color:var(--gold)"></b></p>
+    <p style="margin-bottom:0">⚠️ Watch out for:</p><ul id="bfHazards"></ul>
+    <p id="bfTip" style="color:#9fe8ff"></p>
+    <p id="bfBest" class="small"></p>
+    <div class="row"><button class="btn ghost" id="btnBfBack">◀ Back</button><button class="btn big" id="btnStart">Start Mission</button></div>
+  </div>
+</div>
+
+<!-- PAUSE -->
+<div class="screen overlay" id="pause">
+  <div class="card">
+    <h2>⏸ Paused</h2>
+    <div class="row" style="flex-direction:column;align-items:center"><button class="btn green" id="btnResume">▶ Resume</button><button class="btn blue" id="btnRestart">↻ Restart Level</button><button class="btn" id="btnQuit">🗺️ Level Map</button></div>
+    <div class="row"><button class="btn ghost btnMusic">🎵 Music: ON</button><button class="btn ghost btnSfx">🔊 Sound: ON</button></div>
+  </div>
+</div>
+
+<!-- WIN -->
+<div class="screen overlay" id="win">
+  <div id="confetti"></div>
+  <div class="card">
+    <h2 id="winTitle">Mission Complete!</h2>
+    <div id="winStars"><span>★</span><span>★</span><span>★</span></div>
+    <p id="winSub"></p>
+    <div class="scoreList" id="winScore"></div>
+    <div class="row"><button class="btn ghost" id="btnWinMap">🗺️ Map</button><button class="btn blue" id="btnWinReplay">↻ Replay</button><button class="btn big" id="btnNext">Next ▶</button></div>
+  </div>
+</div>
+
+<!-- LOSE -->
+<div class="screen overlay" id="lose">
+  <div class="card">
+    <p class="sadFace">😳</p>
+    <h2 style="color:#ff6b9d;text-shadow:0 3px 0 #8a1f4a">You Were Spotted!</h2>
+    <p style="font-size:22px;font-weight:800;margin-top:-4px">Try Again</p>
+    <p id="loseSub"></p>
+    <p id="loseStats" class="small"></p>
+    <div class="row"><button class="btn ghost" id="btnLoseMap">🗺️ Map</button><button class="btn big" id="btnRetry">↻ Try Again</button></div>
+  </div>
+</div>
+
+<script src="js/audio.js"></script>
+<script src="js/levelgen.js"></script>
+<script src="js/game.js"></script>
+<script src="js/render.js"></script>
+<script src="js/main.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3af549b5b320e49',t:'MTc4OTM4ODI2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
